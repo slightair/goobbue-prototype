@@ -20,3 +20,10 @@ _cgo_export.*
 _testmain.go
 
 *.exe
+
+# goobbue
+node_modules
+bower_components
+src/js/*
+public/lib/*
+public/js/goobbue-min.js
