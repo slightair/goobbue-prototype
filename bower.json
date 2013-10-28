@@ -8,7 +8,8 @@
   "private": true,
   "dependencies": {
     "jquery": "~2.0.3",
-    "bootstrap": "~3.0.0"
+    "bootstrap": "~3.0.0",
+    "CanvasEngine": "RSamaium/CanvasEngine#7d18c0ca5caf33b5e740ba9a54fa34168325ce9e"
   },
   "exportsOverride": {
     "bootstrap": {
@@ -16,7 +17,10 @@
       "css": "./dist/css/bootstrap.min.css"
     },
     "jquery": {
-      "js": "jquery.min.js"
+      "js": ["jquery.min.js", "jquery.min.map"]
+    },
+    "CanvasEngine": {
+      "js": ["canvasengine-1.3.0.all.min.js", "extends/Tiled.js"]
     }
   }
 }
