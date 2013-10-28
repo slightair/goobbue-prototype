@@ -1,5 +1,7 @@
 package goobbue
 
+import "math/rand"
+
 const (
     MapWidth  = 21
     MapHeight = 15
@@ -10,6 +12,7 @@ const (
 )
 
 const (
+    Void  = 0
     Wall  = 33
     Grass = 42
 )
@@ -99,16 +102,7 @@ func createLayers() []*Layer {
     mapData := make([]int, MapWidth * MapHeight)
     objectData := make([]int, MapWidth * MapHeight)
     
-    for y := 0; y < MapHeight; y++ {
-        for x := 0; x < MapWidth; x++ {
-            index := y * MapWidth + x
-            if y == 0 || y == MapHeight - 1 || x == 0 || x == MapWidth - 1 {
-                mapData[index] = Wall
-            } else {
-                mapData[index] = Grass
-            }
-        }
-    }
+    createMaze(mapData)
     
     for i, v := range mapData {
         if v == Wall {
@@ -121,5 +115,86 @@ func createLayers() []*Layer {
     return []*Layer {
         NewLayer("object", objectData, false),
         NewLayer("map", mapData, true),
+    }
+}
+
+func createMaze(mapData []int) {
+    for y := 1; y < MapHeight - 1; y++ {
+        for x := 1; x < MapWidth - 1; x++ {
+            mapData[mapIndex(x, y)] = Wall
+        }
+    }
+    
+    startX := rand.Intn((MapWidth - 2) / 2) * 2 + 2
+    startY := rand.Intn((MapHeight - 2) / 2) * 2 + 2
+    mapData[mapIndex(startX, startY)] = Void
+    
+    buildRoad(mapData, startX, startY)
+    
+    for i, o := range mapData {
+        if o == Void {
+            mapData[i] = Grass
+        }
+    }
+}
+
+func mapIndex(x, y int) int {
+    return y * MapWidth + x
+}
+
+type buildRoadFunc func(mapData []int, startX, startY int)
+
+func buildRoad(mapData []int, startX, startY int) {
+    functions := []buildRoadFunc {
+        buidRoadToTop,
+        buidRoadToRight,
+        buidRoadToLeft,
+        buidRoadToBottom,
+    }
+    
+    for i := len(functions); i > 1; i-- {
+        a := i - 1
+        b := rand.Intn(i)
+        functions[a], functions[b] = functions[b], functions[a]
+    }
+    
+    for _, f := range functions {
+        f(mapData, startX, startY)
+    }
+}
+
+func buidRoadToTop(mapData []int, startX, startY int) {
+    target := mapIndex(startX, startY - 2)
+    if mapData[target] != Void {
+        mapData[mapIndex(startX, startY - 1)] = Void
+        mapData[target] = Void
+        buildRoad(mapData, startX, startY - 2)
+    }
+}
+
+func buidRoadToRight(mapData []int, startX, startY int) {
+    target := mapIndex(startX + 2, startY)
+    if mapData[target] != Void {
+        mapData[mapIndex(startX + 1, startY)] = Void
+        mapData[target] = Void
+        buildRoad(mapData, startX + 2, startY)
+    }
+}
+
+func buidRoadToBottom(mapData []int, startX, startY int) {
+    target := mapIndex(startX, startY + 2)
+    if mapData[target] != Void {
+        mapData[mapIndex(startX, startY + 1)] = Void
+        mapData[target] = Void
+        buildRoad(mapData, startX, startY + 2)
+    }
+}
+
+func buidRoadToLeft(mapData []int, startX, startY int) {
+    target := mapIndex(startX - 2, startY)
+    if mapData[target] != Void {
+        mapData[mapIndex(startX - 1, startY)] = Void
+        mapData[target] = Void
+        buildRoad(mapData, startX - 2, startY)
     }
 }
