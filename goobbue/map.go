@@ -18,8 +18,10 @@ const (
 )
 
 const (
-    None = 0
-    Block = 1
+    None  = iota
+    Start = iota
+    Goal  = iota
+    Block = iota
 )
 
 type Map struct {
@@ -112,6 +114,20 @@ func createLayers() []*Layer {
         }
     }
     
+    blindAlleys := searchBlindAlleys(mapData)
+    
+    for i := len(blindAlleys); i > 1; i-- {
+        a := i - 1
+        b := rand.Intn(i)
+        blindAlleys[a], blindAlleys[b] = blindAlleys[b], blindAlleys[a]
+    }
+    
+    startIndex := blindAlleys[0]
+    goalIndex := blindAlleys[len(blindAlleys)-1]
+    
+    objectData[startIndex] = Start
+    objectData[goalIndex] = Goal
+    
     return []*Layer {
         NewLayer("object", objectData, false),
         NewLayer("map", mapData, true),
@@ -136,6 +152,30 @@ func createMaze(mapData []int) {
             mapData[i] = Grass
         }
     }
+}
+
+func searchBlindAlleys(mapData []int) []int {
+    blindAlleys := []int{}
+    for y := 2; y < MapHeight - 2; y++ {
+        for x := 2; x < MapWidth - 2; x++ {
+            index := mapIndex(x, y)
+            
+            if mapData[index] == Wall {
+                continue
+            }
+            
+            count := 0
+            if mapData[mapIndex(x - 1, y)] == Wall { count++ }
+            if mapData[mapIndex(x + 1, y)] == Wall { count++ }
+            if mapData[mapIndex(x, y - 1)] == Wall { count++ }
+            if mapData[mapIndex(x, y + 1)] == Wall { count++ }
+            
+            if count == 3 {
+                blindAlleys = append(blindAlleys, index)
+            }
+        }
+    }
+    return blindAlleys
 }
 
 func mapIndex(x, y int) int {
