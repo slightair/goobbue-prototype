@@ -12,9 +12,10 @@ const (
 )
 
 const (
-    Void  = 0
-    Wall  = 33
-    Grass = 42
+    Void   = 0
+    Wall   = 33
+    Grass  = 42
+    Stairs = 55
 )
 
 const (
@@ -103,14 +104,15 @@ func NewTileSet(name string) *TileSet {
 func createLayers() []*Layer {
     mapData := make([]int, MapWidth * MapHeight)
     objectData := make([]int, MapWidth * MapHeight)
+    collisionData := make([]int, MapWidth * MapHeight)
     
     createMaze(mapData)
     
     for i, v := range mapData {
         if v == Wall {
-            objectData[i] = Block
+            collisionData[i] = Block
         } else {
-            objectData[i] = None
+            collisionData[i] = None
         }
     }
     
@@ -125,12 +127,14 @@ func createLayers() []*Layer {
     startIndex := blindAlleys[0]
     goalIndex := blindAlleys[len(blindAlleys)-1]
     
-    objectData[startIndex] = Start
-    objectData[goalIndex] = Goal
+    collisionData[startIndex] = Start
+    collisionData[goalIndex] = Goal
+    objectData[goalIndex] = Stairs
     
     return []*Layer {
-        NewLayer("object", objectData, false),
+        NewLayer("collision", collisionData, false),
         NewLayer("map", mapData, true),
+        NewLayer("object", objectData, true),
     }
 }
 
