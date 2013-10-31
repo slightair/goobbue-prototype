@@ -6,9 +6,12 @@ generate Tiled json with golang.
 
 Tiled Map Editor: http://www.mapeditor.org/
 
-Demo: http://goobbue-prototype.herokuapp.com/
-
 How to play
+--------
+
+http://goobbue-prototype.herokuapp.com/
+
+Build Application
 --------
 
 checkout this repository
