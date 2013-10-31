@@ -21,5 +21,6 @@ func StartServer(port int) {
         http.ServeFile(w, r, "public/" + r.URL.Path[1:])
     })
     
+    fmt.Printf("[Goobbue Server] start: port=%d\n", port)
     panic(http.ListenAndServe(fmt.Sprintf(":%d", port), nil))
 }
