@@ -17,7 +17,7 @@ Build Application
 checkout this repository
 
 ```bash
-$ git clone git@github.com:slightair/goobbue-prototype.git
+$ git clone https://github.com/slightair/goobbue-prototype.git
 ```
 
 install dependencies.
